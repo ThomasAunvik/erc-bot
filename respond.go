@@ -1,30 +1,38 @@
 package main
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"time"
 
-import "time"
+	"github.com/bwmarrin/discordgo"
+)
 
-func (b *Bot) respond(content, channelID string) (*discordgo.Message, error) {
+func (b *Bot) reply(content, channelID string) (*discordgo.Message, error) {
 	m, err := b.session.ChannelMessageSend(channelID, content)
 	if err != nil {
-		logMessageSendError(channelID, err)
+		b.logMessageSendError(channelID, err)
 	}
 	return m, err
 }
 
-func (b *Bot) respondAndDelete(content, channelID, messageID string, t time.Duration) {
-	m, err := b.respond(content, channelID)
+func (b *Bot) replyAndClear(content, channelID, messageID string, t time.Duration) {
+	m, err := b.reply(content, channelID)
 	if err != nil {
 		return
+	}
+	c, _ := b.session.Channel(channelID)
+	if c != nil {
+		if c.GuildID == "" {
+			return
+		}
 	}
 	time.AfterFunc(t, func() {
 		err := b.session.ChannelMessageDelete(channelID, m.ID)
 		if err != nil {
-			logMessageDeleteError(channelID, m.ID, err)
+			b.logMessageDeleteError(channelID, m.ID, err)
 		}
 		err = b.session.ChannelMessageDelete(channelID, messageID)
 		if err != nil {
-			logMessageDeleteError(channelID, m.ID, err)
+			b.logMessageDeleteError(channelID, m.ID, err)
 		}
 	})
 }

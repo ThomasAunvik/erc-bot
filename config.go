@@ -1,8 +1,10 @@
 package main
 
-import "os"
-import "encoding/json"
-import "io/ioutil"
+import (
+	"encoding/json"
+	"io/ioutil"
+	"os"
+)
 
 // readconfig returns the config for the bot and panics if the read fails.
 func readconfig() *Config {
@@ -38,22 +40,17 @@ type Config struct {
 		ChannelID     string `json:"channelID"`
 		MaxTokens     int    `json:"maxTokens"`
 		TokenInterval int    `json:"tokenInterval"`
+		CharLimit     int    `json:"charLimit"`
+		NewlineLimit  int    `json:"newlineLimit"`
 	} `json:"throttle"`
 	Monitor struct {
-		Output string   `json:"output"`
-		Events []string `json:"events"`
+		Output string `json:"output"`
 	} `json:"monitor"`
-	Welcome struct {
-		Message string `json:"message"`
-	} `json:"welcome"`
 	Purge []struct {
 		ChannelID      string `json:"channelID"`
 		CronExpression string `json:"cronExpression"`
 	} `json:"purge"`
-	Accuracy struct {
-	} `json:"accuracy"`
-	Help  string `json:"help"`
-	Clear struct {
-	} `json:"clear"`
-	CommandPrefix string `json:"commandPrefix"`
+	Help           string `json:"help"`
+	CommandPrefix  string `json:"commandPrefix"`
+	WelcomeMessage string `json:"welcomeMessage"`
 }
